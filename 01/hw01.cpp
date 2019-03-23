@@ -15,11 +15,11 @@ int main(int arg1, char** arg2)
 
 	if((arg1 <= 2) || (arg1%2 ==0))
 		return -1;
-	for(i=1; i<arg1; i+=2)
+	for(int k=1; k<arg1; k+=2)
 	{
 	
-		left = atoi(arg2[i]);
-		right = atoi(arg2[i+1]);
+		left = atoi(arg2[k]);
+		right = atoi(arg2[k+1]);
 
 		if(left > right)
 		{

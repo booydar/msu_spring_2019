@@ -1,4 +1,3 @@
-//#include "timer.h"
 #include "numbers.dat"
 #include <iostream>
 

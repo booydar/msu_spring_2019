@@ -3,12 +3,14 @@
 
 using namespace std;
 
+[[noreturn]] void error(){throw invalid_argument("error"); }
+
 class Result
 {
-    public: Result(double v, string r)
+    public: Result(int64_t v, string r)
 		: acc(v), rest(r) {}
 
-	double acc;
+	int64_t acc;
     string rest;
 };
 
@@ -17,17 +19,12 @@ class parcerpm
 	public: parcerpm(){}
 	
 	public:
-		double parce(string s)
+		int64_t parce(string s)
 		{
 			for(int i=0; i<s.length(); i++)
 				if(!(isdigit(s[i]) || s[i]=='-' || s[i]=='+' || s[i]=='*' || s[i]=='/' || s[i]==' '))
-				{
-					cout << "error";
-					return -1;
-				}
+					error();
 			Result result = pm(s);
-			if(result.rest.length() != 0)
-				cout << "error !" << result.rest << "!";
 			return result.acc;
 		};
 
@@ -38,7 +35,7 @@ class parcerpm
 				s = s.substr(1);
 			
 			Result current = term(s);
-			double acc = current.acc;
+			int64_t acc = current.acc;
 			
 			while(current.rest[0] == ' ')
 				current.rest = current.rest.substr(1);
@@ -79,7 +76,7 @@ class parcerpm
 
 			while(i < s.length() && isdigit(s[i]))
 				i++;
-			double num = stod(s.substr(0,i));
+			int64_t num = stod(s.substr(0,i));
 			if(negative)
 				num = -num;
 			string rest = s.substr(i);
@@ -92,7 +89,7 @@ class parcerpm
         Result term(string s)
         {
             int i=0;
-            double num1=0, num2=0;
+            int64_t num1=0;
 			Result current = Num(s);
             num1 = current.acc;
             s = current.rest;
@@ -120,6 +117,8 @@ class parcerpm
 					{
 						s = s.substr(1);
 						Result curr = Num(s);
+						if(curr.acc == 0)
+							error();
 						num1 = num1 / curr.acc;
 						s = curr.rest;
 					}
@@ -138,7 +137,14 @@ int main(int argc, char** argv)
 	string str = argv[1];
 	parcerpm pm;
 
-	cout << pm.parce(str);
+	try 
+	{
+		cout << pm.parce(str) << endl;
+	}
+	catch (exception& e)
+	{
+		cout << e.what() << endl;
+	}
 	return 0;	
 }
 

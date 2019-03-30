@@ -19,7 +19,7 @@ class parcerpm
 	public: parcerpm(){}
 	
 	public:
-		int64_t parce(string s)
+		int64_t parce (string s)
 		{
 			for(int i=0; i<s.length(); i++)
 				if(!(isdigit(s[i]) || s[i]=='-' || s[i]=='+' || s[i]=='*' || s[i]=='/' || s[i]==' '))

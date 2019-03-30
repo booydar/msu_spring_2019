@@ -74,19 +74,13 @@ int main(int arg1, char** arg2)
 				
 				for(i=p+1; i<n; i++)
 					if(isprime[i] == 1)
-						break;	
-
+						break;
 				p = i;
 				if(p==n)
 					break;
-
-
-
 			}
 			
-			j = 0;
-
-			
+			j = 0;			
 			for(i=lpos; i<m; i++)
 			{
 				if(isprime[Data[i]] == 1)
@@ -94,18 +88,9 @@ int main(int arg1, char** arg2)
 					j ++;
 				}
 			}
-
-		cout << j << endl;
-
 			
+		cout << j << endl;			
 		}
-		
-
 	}
-
-	
-
-
 	return 0;
-
 }

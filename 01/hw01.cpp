@@ -6,7 +6,7 @@ using namespace std;
 long int pos(long int value)
 {
 	int i=0;
-	long int n = 100002, ps;
+	long int n = sizeof(Data)/sizeof(Data[0]), ps;
 
 	for(i=0; i<n; i++)
 	{
@@ -27,7 +27,7 @@ long int pos(long int value)
 
 int main(int arg1, char** arg2)
 {
-	long int n = 100002;
+	long int n = sizeof(Data)/sizeof(Data[0]);
 	long int i=0, j=0;
 	long int lpos, rpos;
 	long int left, right;

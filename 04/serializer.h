@@ -1,6 +1,4 @@
-
 using namespace std;
-
 #pragma once
 
 enum class Error
@@ -128,8 +126,7 @@ private:
         if (read(val) == Error::CorruptedArchive)
             return Error::CorruptedArchive;
         else
-            return process(std::forward<Args>(args)...);
-        
+            return process(std::forward<Args>(args)...);        
     }
     
 

@@ -21,7 +21,7 @@ public:
 	parcerpm() {}
 
 public:
-	int64_t parce(string s)
+	int64_t parce(string& s)
 	{
 		for (int i = 0; i < s.length(); i++)
 			if (!(isdigit(s[i]) || s[i] == '-' || s[i] == '+' || s[i] == '*' || s[i] == '/' || s[i] == ' '))
@@ -31,7 +31,7 @@ public:
 	};
 
 private:
-	Result pm(string s)
+	Result pm(string& s)
 	{
 		while (s[0] == ' ')
 			s = s.substr(1);
@@ -62,7 +62,7 @@ private:
 		return Result(current.acc, current.rest);
 	};
 
-	Result Num(string s)
+	Result Num(string& s)
 	{
 		int i = 0;
 		bool negative = false;
@@ -87,7 +87,7 @@ private:
 		return Result(num, rest);
 	}
 
-	Result term(string s)
+	Result term(string& s)
 	{
 		int i = 0;
 		int64_t num1 = 0;

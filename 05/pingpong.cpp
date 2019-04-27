@@ -5,43 +5,42 @@
 
 using namespace std;
 
+mutex m;
+condition_variable c;
+int n=5;
+
+void pingpong(bool* Ping)
+{
+    for(int i=0; i<n; i++)
+    {
+        lock_guard<mutex> lock(m);
+        
+        if(!*Ping){
+            cout << "pong\n";
+            *Ping = true;
+            c.notify_one();
+            continue;
+        }
+        if(*Ping){
+            cout << "ping\n";
+            *Ping = false;
+            c.notify_one();
+            continue;
+        }
+        
+        
+    }
+}
+
 int main()
 {
-
-    mutex m;
-    condition_variable c;
     bool Ping = true;
-    //int n=500000;
-    int n = 10;
 
-    thread ping([&]()
-    {
-        unique_lock<mutex> lock(m);
-        for(int i=0; i<n; i++)
-        {
-            while(!Ping)
-                c.wait(lock);
-            cout << "ping\n";
-            Ping = false;
-            c.notify_one();
-        }
-    }); 
-
-    thread pong([&]()
-    {
-        unique_lock<mutex> lock(m);
-        for(int i=0; i<n; i++)
-        {
-            while(Ping)
-                c.wait(lock);
-            cout << "pong\n";
-            Ping = true;
-            c.notify_one();
-        }
-    });
+    thread ping(pingpong, &Ping);
+    thread pong(pingpong, &Ping);
     
     ping.join();
     pong.join();
    
-   return 0;
+    return 0;
 }

@@ -42,11 +42,12 @@ public:
         return Row(cols, data_ + cols*row);
     }
 
-    bool operator==(const Matrix other) const
+    bool operator==(const Matrix& other) const
     {
+        
         if(this == &other)
             return true;
-
+        
         for(int i=0; i<rows; i++)
             for(int j=0; j<cols; j++)
                 if(data_[i*cols + j] != other.data_[i*cols + j])
@@ -54,8 +55,13 @@ public:
 
         return true;            
     }
+
+    bool operator!=(const Matrix& other) const
+    {
+        return !(*this == other);
+    }
     
-    Matrix operator*=(int mult)
+    Matrix& operator*=(int mult)
     {
         for(int i=0; i<rows; i++)
             for(int j=0; j<cols; j++)
@@ -73,5 +79,9 @@ public:
     {
         return cols;
     }
+    ~Matrix()
+    {
+        delete data_;
+    };
     
 };

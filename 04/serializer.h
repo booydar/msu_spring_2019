@@ -1,4 +1,6 @@
+
 using namespace std;
+
 #pragma once
 
 enum class Error
@@ -7,30 +9,11 @@ enum class Error
     CorruptedArchive
 };
 
-struct Data
-{
-    uint64_t a;
-    bool b;
-    uint64_t c;
-
-    template <class Serializer>    
-    Error serialize(Serializer& serializer)
-    {
-        return serializer(a, b, c);
-    }
-
-    template <class Deserializer>
-    Error deserialize(Deserializer& deserializer)
-    {
-        return deserializer(a, b, c);
-    }
-};
-
 class Serializer
 {
     static constexpr char Separator = ' ';
 public:
-    explicit Serializer(std::ostream& out)
+    explicit Serializer(ostream& out)
         : out_(out)
     {
     }
@@ -43,9 +26,9 @@ public:
     }
     
     template <class... ArgsT>
-    Error operator()(ArgsT... args)
+    Error operator()(ArgsT&&... args)
     {
-        return process(args...);
+        return process(forward<ArgsT>(args)...);
     }
     
 private:
@@ -55,7 +38,7 @@ private:
     template <class T>
     Error process(T&& arg)
     {
-        print(arg);
+        print(forward<T>(arg));
         return Error::NoError;
     }
 
@@ -63,19 +46,17 @@ private:
     Error process(T&& val, Args&&... args)
     {
         print(val);
-        out_ << val;
-        process(std::forward<Args>(args)...);
-        return Error::NoError;
-        
+        out_ << Separator;
+        return process(forward<Args>(args)...);       
     }
 
     template<class T>
-    void print(T& arg)
+    void print(T&& arg)
     {
         out_ << arg;
     }
 
-    void print(bool& arg)
+    void print(bool arg)
     {
         if(arg)
             out_ << "true";
@@ -99,13 +80,13 @@ public:
     template <class T>
     Error load(T& object)
     {
-        return object.deserialize(*this);
+        return object.serialize(*this);
     }
     
     template <class... ArgsT>
-    Error operator()(ArgsT... args)
+    Error operator()(ArgsT&&... args)
     {
-        return process(args...);
+        return process(forward<ArgsT>(args)...);
     }
  
 private:
@@ -114,28 +95,36 @@ private:
     template <class T>
     Error process(T&& arg)
     {
-        if(read(arg) == Error::CorruptedArchive)
-            return Error::CorruptedArchive;
-        else
+        if(read(forward<T>(arg)) == Error::NoError)
             return Error::NoError;
+        else
+            return Error::CorruptedArchive;
     }
 
     template<class T, class... Args>
     Error process(T&& val, Args&&... args)
     {
-        if (read(val) == Error::CorruptedArchive)
+        if (read(forward<T>(val)) == Error::CorruptedArchive)
             return Error::CorruptedArchive;
         else
-            return process(std::forward<Args>(args)...);        
+            return process(forward<Args>(args)...);
+        
     }
     
 
-    Error read(long unsigned int& value)
+    Error read(uint64_t& value)
     {
         string str;
         in_ >> str;
-        value = stoul(str);
-        return Error::NoError;
+        if(str[0]=='-')
+            return Error::CorruptedArchive;
+        try {
+            value = std::stoul(str);
+            return Error::NoError;
+        }
+        catch (std::invalid_argument& e) { 
+            return Error::CorruptedArchive; 
+        }
     }
 
     Error read(bool& value)

@@ -65,14 +65,14 @@ public:
     Row** data_;
 
 public:
-    Row operator[](int row)
+    Row& operator[](int row)
     {
         if(row >= rows)
             throw out_of_range("");
         return *data_[row];
     }
     
-    const Row operator[](int row) const
+    const Row& operator[](int row) const
     {
         if(row >= rows)
             throw out_of_range("");

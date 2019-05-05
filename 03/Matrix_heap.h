@@ -6,11 +6,12 @@ using namespace std;
 class Row
     {
     public:
+        
         Row(const int l): len(l), sdata_(new int(l)){
             for(int i=0; i<l; i++)
                 sdata_[i] = 0;
         };
-        
+                
         int* sdata_;
         int len;
         
@@ -44,7 +45,10 @@ class Row
         {
             return !(*this == other);
         }
-        
+        ~Row()
+        {
+            delete sdata_;
+        }        
     };
 
 class Matrix
@@ -110,6 +114,8 @@ public:
     }
     ~Matrix()
     {
+        for(int i=0; i<rows; i++)
+            delete data_[i];
         delete data_;
     };
     

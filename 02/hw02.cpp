@@ -33,9 +33,7 @@ public:
 private:
 	Result pm(string& s)
 	{
-		while (s[0] == ' ')
-			s = s.substr(1);
-
+	
 		Result current = term(s);
 		int64_t acc = current.acc;
 
@@ -62,13 +60,13 @@ private:
 		return Result(current.acc, current.rest);
 	};
 
-	Result Num(string& s)
+	Result Num(string& str)
 	{
 		int i = 0;
+		string s = str;
 		bool negative = false;
 		while (s[0] == ' ')
 			s = s.substr(1);
-
 		if (s[0] == '-')
 		{
 			negative = true;
@@ -87,13 +85,13 @@ private:
 		return Result(num, rest);
 	}
 
-	Result term(string& s)
+	Result term(string& str)
 	{
 		int i = 0;
 		int64_t num1 = 0;
-		Result current = Num(s);
+		Result current = Num(str);
 		num1 = current.acc;
-		s = current.rest;
+		string s = current.rest;
 		while (s[0] == ' ')
 			s = s.substr(1);
 

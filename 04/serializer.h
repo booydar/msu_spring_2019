@@ -53,7 +53,7 @@ private:
         out_ << arg;
     }
 
-    void print(bool arg)
+    void print(bool& arg)
     {
         if(arg)
             out_ << "true";

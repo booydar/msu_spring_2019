@@ -6,12 +6,10 @@ using namespace std;
 class Row
     {
     public:
-        
         Row(const int l): len(l), sdata_(new int(l)){
             for(int i=0; i<l; i++)
                 sdata_[i] = 0;
         };
-        
         
         int* sdata_;
         int len;

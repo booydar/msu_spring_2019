@@ -18,7 +18,6 @@ void pingpong(bool& Ping)
             cout << "pong\n";
             Ping = true;
             m.unlock();
-            c.notify_one();
             continue;
 
         }
@@ -26,7 +25,6 @@ void pingpong(bool& Ping)
             cout << "ping\n";
             Ping = false;
             m.unlock();
-            c.notify_one();
             continue;
         }        
     }

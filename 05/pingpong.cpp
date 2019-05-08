@@ -9,30 +9,25 @@ mutex m;
 condition_variable c;
 int n=5;
 
-void pingpong(bool& Ping, bool& Pong)
+void pingpong(bool& Ping)
 {
     for(int i=0; i<n; i++)
     {
         unique_lock<mutex> lock(m);
         if(!Ping){
-            while(!Pong)
-                c.wait(lock);
             cout << "pong\n";
             Ping = true;
-            Pong = false;
-            m.unlock();
-            c.notify_one();
+            while(!Ping)
+                c.wait(lock);
+            
             continue;
-
         }
         if(Ping){
-            while(Pong)
-                c.wait(lock);
-            cout << "ping\n";
+            cout << "ping\n"; 
             Ping = false;
-            Pong = true;
-            m.unlock();
-            c.notify_one();
+            while(Ping)
+                c.wait(lock);
+            
             continue;
         }        
     }
@@ -41,9 +36,8 @@ void pingpong(bool& Ping, bool& Pong)
 int main()
 {
     bool Ping = true;
-    bool Pong = false;
-    thread ping(pingpong, ref(Ping), ref(Pong));
-    thread pong(pingpong, ref(Ping), ref(Pong));
+    thread ping(pingpong, ref(Ping));
+    thread pong(pingpong, ref(Ping));
     
     ping.join();
     pong.join();

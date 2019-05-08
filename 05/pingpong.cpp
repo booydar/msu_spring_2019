@@ -17,7 +17,8 @@ void pingpong(bool& Ping)
         if(!Ping){
             cout << "pong\n";
             Ping = true;
-            while(!Ping)
+            c.notify_one();
+            while(Ping && i < n-1)
                 c.wait(lock);
             
             continue;
@@ -25,7 +26,8 @@ void pingpong(bool& Ping)
         if(Ping){
             cout << "ping\n"; 
             Ping = false;
-            while(Ping)
+            c.notify_one();
+            while(!Ping)
                 c.wait(lock);
             
             continue;

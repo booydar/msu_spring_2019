@@ -21,7 +21,7 @@ public:
 	parcerpm() {}
 
 public:
-	int64_t parce(string& s)
+	int64_t parce(const string& s)
 	{
 		for (int i = 0; i < s.length(); i++)
 			if (!(isdigit(s[i]) || s[i] == '-' || s[i] == '+' || s[i] == '*' || s[i] == '/' || s[i] == ' '))
@@ -31,7 +31,7 @@ public:
 	};
 
 private:
-	Result pm(string& s)
+	Result pm(const string& s)
 	{
 	
 		Result current = term(s);
@@ -60,7 +60,7 @@ private:
 		return Result(current.acc, current.rest);
 	};
 
-	Result Num(string& str)
+	Result Num(const string& str)
 	{
 		int i = 0;
 		string s = str;
@@ -85,7 +85,7 @@ private:
 		return Result(num, rest);
 	}
 
-	Result term(string& str)
+	Result term(const string& str)
 	{
 		int i = 0;
 		int64_t num1 = 0;
@@ -140,5 +140,6 @@ int main(int argc, char **argv)
 	{
 		cout << e.what() << endl;
 	}
+	cout << str << endl;
 	return 0;
 }

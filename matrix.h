@@ -1,144 +1,118 @@
-#include <iostream>
-#include <string>
-
+#include<iostream>
 using namespace std;
 
 [[noreturn]] void error() { throw invalid_argument("error"); }
 
-class Result
+class Row
+    {
+    public:
+        
+        Row(const int l): len(l), sdata_(new int(l)){
+            for(int i=0; i<l; i++)
+                sdata_[i] = 0;
+        };
+        
+        
+        int* sdata_;
+        int len;
+        
+        int& operator[](size_t pos)
+        {
+            if(pos >= len)
+                throw out_of_range("");
+            return sdata_[pos];
+        }
+        
+        const int& operator[](size_t pos) const
+        {
+            if(pos >= len)
+                throw out_of_range("");
+            return sdata_[pos];
+        }
+        
+        Row& operator *= (int mult)
+        {
+            for(int i=0; i<len; i++)
+                sdata_[i] *= mult;
+        }
+        bool operator == (Row& other)
+        {
+            for(int i=0; i<len; i++)
+                if(sdata_[i] != other.sdata_[i])
+                    return false;
+            return true;
+        }
+        bool operator != (Row& other)
+        {
+            return !(*this == other);
+        }
+        
+    };
+
+class Matrix
 {
 public:
-	Result(int64_t v, string r)
-		: acc(v), rest(r) {}
+    Matrix(size_t r, size_t c)
+        : rows(r), cols(c), data_(new Row*[r]){
+            for(int i = 0; i < rows; i++)
+                data_[i] = new Row(c);
+        };
 
-	int64_t acc;
-	string rest;
+    const size_t rows;
+    const size_t cols;
+    Row** data_;
+
+public:
+    Row operator[](int row)
+    {
+        if(row >= rows)
+            throw out_of_range("");
+        return *data_[row];
+    }
+    
+    const Row operator[](int row) const
+    {
+        if(row >= rows)
+            throw out_of_range("");
+        return *data_[row];
+    }
+    
+    bool operator==(const Matrix& other) const      
+    {
+        
+        if(this == &other)
+            return true;
+        
+        for(int i=0; i<rows; i++)
+            if(data_[i] != other.data_[i])
+                return false;
+        return true;            
+    }
+
+    bool operator!=(const Matrix& other) const
+    {
+        return !(*this == other);
+    }
+    
+    Matrix& operator*=(int mult)
+    {
+        for(int i=0; i<rows; i++)
+            *data_[i] *= mult;
+        return *this;
+    }
+
+    size_t getRows()
+    {
+        return rows;
+    }
+
+    size_t getColumns()
+    {
+        return cols;
+    }
+    ~Matrix()
+    {
+        delete data_;
+    };
+    
 };
-
-class parcerpm
-{
-public:
-	parcerpm() {}
-
-public:
-	int64_t parce(const string& s)
-	{
-		for (int i = 0; i < s.length(); i++)
-			if (!(isdigit(s[i]) || s[i] == '-' || s[i] == '+' || s[i] == '*' || s[i] == '/' || s[i] == ' '))
-				error();
-		Result result = pm(s);
-		return result.acc;
-	};
-
-private:
-	Result pm(const string& s)
-	{
-	
-		Result current = term(s);
-		int64_t acc = current.acc;
-
-		while (current.rest[0] == ' ')
-			current.rest = current.rest.substr(1);
-
-		while (current.rest.length() > 0)
-		{
-
-			if (!(current.rest[0] == '-' || current.rest[0] == '+'))
-				break;
-
-			string next = current.rest.substr(1);
-			acc = current.acc;
-			char sign = current.rest[0];
-
-			current = term(next);
-			if (sign == '+')
-				acc += current.acc;
-			else if (sign == '-')
-				acc -= current.acc;
-			current.acc = acc;
-		}
-		return Result(current.acc, current.rest);
-	};
-
-	Result Num(const string& str)
-	{
-		int i = 0;
-		string s = str;
-		bool negative = false;
-		while (s[0] == ' ')
-			s = s.substr(1);
-		if (s[0] == '-')
-		{
-			negative = true;
-			s = s.substr(1);
-		}
-
-		while (i < s.length() && isdigit(s[i]))
-			i++;
-		int64_t num = stod(s.substr(0, i));
-		if (negative)
-			num = -num;
-		string rest = s.substr(i);
-		while (s[0] == ' ')
-			s = s.substr(1);
-
-		return Result(num, rest);
-	}
-
-	Result term(const string& str)
-	{
-		int i = 0;
-		int64_t num1 = 0;
-		Result current = Num(str);
-		num1 = current.acc;
-		string s = current.rest;
-		while (s[0] == ' ')
-			s = s.substr(1);
-
-		if (s[0] == '*' || s[0] == '/')
-			while (s.length() > 0)
-			{
-				if (isdigit(s[0]) || s[0] == '+' || s[0] == '-')
-					break;
-
-				while (s[0] == ' ')
-					s = s.substr(1);
-
-				if (s[0] == '*')
-				{
-					s = s.substr(1);
-					Result curr = Num(s);
-					num1 = num1 * curr.acc;
-					s = curr.rest;
-				}
-
-				if (s[0] == '/')
-				{
-					s = s.substr(1);
-					Result curr = Num(s);
-					if (curr.acc == 0)
-						error();
-					num1 = num1 / curr.acc;
-					s = curr.rest;
-				}
-			}
-
-		return Result(num1, s);
-	}
-};
-
-int main(int argc, char **argv)
-{
-	string str = argv[1];
-	parcerpm pm;
-
-	try
-	{
-		cout << pm.parce(str) << endl;
-	}
-	catch (exception &e)
-	{
-		cout << e.what() << endl;
-	}
-	return 0;
-}

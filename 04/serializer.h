@@ -23,7 +23,6 @@ public:
     template <class T>
     Error save(T& object)
     {
-        //return object.serialize(forward<T>(this));
         return object.serialize(*this);
     }
     

@@ -1,4 +1,7 @@
+#include <iostream>
+#include <sstream>
 using namespace std;
+
 #pragma once
 
 enum class Error
@@ -10,16 +13,17 @@ enum class Error
 class Serializer
 {
     static constexpr char Separator = ' ';
-
 public:
     explicit Serializer(ostream& out)
         : out_(out)
     {
     }
+
     
     template <class T>
     Error save(T& object)
     {
+        //return object.serialize(forward<T>(this));
         return object.serialize(*this);
     }
     
@@ -30,6 +34,7 @@ public:
     }
     
 private:
+
     std::ostream& out_;
 
     template <class T>
@@ -42,7 +47,7 @@ private:
     template<class T, class... Args>
     Error process(T&& val, Args&&... args)
     {
-        print(val);
+        print(forward<T>(val));
         out_ << Separator;
         return process(forward<Args>(args)...);       
     }
@@ -53,12 +58,13 @@ private:
         out_ << arg;
     }
 
-    void print(bool& arg)
+    void print(bool arg)
     {
         if(arg)
             out_ << "true";
         else
-            out_ << "false";      
+            out_ << "false";
+        
     }
 };
 
@@ -104,6 +110,7 @@ private:
             return Error::CorruptedArchive;
         else
             return process(forward<Args>(args)...);
+        
     }
     
 

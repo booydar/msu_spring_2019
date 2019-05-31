@@ -77,7 +77,6 @@ void merge(ifstream& in1, ifstream& in2, ofstream& out)
 
 
 int iter=0;
-int max_iter=6;
 void merge_sort(string filename)
 {
     size_t size = 0;

@@ -94,49 +94,45 @@ void merge_sort(string filename)
         size++;
     }
     
-    if(iter < max_iter){
-        if (size <= max_size){
-            sort(filename, size, output_name);
-        }
-        else{
-            
-            string fn1 = to_string(iter) + "1.bin";
-            string fn2 = to_string(iter) + "2.bin";
-            
-            ifstream in(filename, ios::binary | ios::in);
-            ofstream out1(fn1, ios::binary | ios::out);
-            ofstream out2(fn2, ios::binary | ios::out);
-
-            thread s1(split, ref(in), max_size, ref(out1), ref(out2));
-            thread s2(split, ref(in), max_size, ref(out1), ref(out2));
-
-            s1.join();
-            s2.join();
-            in.close();
-            out1.close();
-            out2.close();
-
-            merge_sort(fn1);
-            merge_sort(fn2);
-            
-            ifstream in1(fn1, ios::binary | ios::in);
-            ifstream in2(fn2, ios::binary | ios::in);
-            ofstream out(output_name, ios::binary | ios::out);            
-            
-            merge(in1, in2, out);
-
-            in1.close();
-            in2.close();
-            out.close();
-
-            const char* file1 = fn1.c_str();
-            const char* file2 = fn2.c_str();
-            std::remove(file1);
-            std::remove(file2);
-        }
+    if (size <= max_size){
+        sort(filename, size, output_name);
     }
+    else{
+        
+        string fn1 = to_string(iter) + "1.bin";
+        string fn2 = to_string(iter) + "2.bin";
+        
+        ifstream in(filename, ios::binary | ios::in);
+        ofstream out1(fn1, ios::binary | ios::out);
+        ofstream out2(fn2, ios::binary | ios::out);
 
+        thread s1(split, ref(in), max_size, ref(out1), ref(out2));
+        thread s2(split, ref(in), max_size, ref(out1), ref(out2));
 
+        s1.join();
+        s2.join();
+        in.close();
+        out1.close();
+        out2.close();
+
+        merge_sort(fn1);
+        merge_sort(fn2);
+        
+        ifstream in1(fn1, ios::binary | ios::in);
+        ifstream in2(fn2, ios::binary | ios::in);
+        ofstream out(output_name, ios::binary | ios::out);            
+        
+        merge(in1, in2, out);
+
+        in1.close();
+        in2.close();
+        out.close();
+
+        const char* file1 = fn1.c_str();
+        const char* file2 = fn2.c_str();
+        std::remove(file1);
+        std::remove(file2);
+    }
 }
 
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <mutex>
+#include <condition_variable>
 #include <thread>
 
 using namespace std;
@@ -11,11 +12,12 @@ size_t max_size = 1000;
 //size_t max_size = 8E6/sizeof(uint64_t);
 
 mutex m;
+condition_variable c;
 
 void merge_sort(string);
 void split(ifstream&, size_t, ofstream&, ofstream&); //split file into out1 and out2
 void sort(string input_name, size_t size, string output_name); //sort file with small enough size
-void merge(ifstream&, ifstream&, ofstream&); // merge sorted files
+void merge_(ifstream&, ofstream&, int64_t&); // merge sorted files
 
 int main()
 {
@@ -44,42 +46,47 @@ void split(ifstream& in, size_t size, ofstream& out1, ofstream& out2)
     }
 }
 
-void merge(ifstream& in1, ifstream& in2, ofstream& out) 
+void merge_(ifstream& in, ofstream& out, int64_t& bar)
 {
-    uint64_t a,b;
-    in1 >> a;
-    in2 >> b;
+    int64_t a;
+    int it;
 
     while(1){
-        if(a > b){
-            out << b << ' ';
-            if(!(in2 >> b)){
-                out << a << ' ';
-                break;
-            }
-        }
-        else {
-            out << a << ' ';
-            if(!(in1 >> a)){
-                out << b << ' ';
-                break;
-            }
-        }
-    }
+        unique_lock<mutex> lock(m);
 
-    while(in1 >> a){
-        out << a << ' ';
-    }
-    while(in2 >> a){
-        out << a << ' ';
+        if(!(in >> a)){
+            if(bar != -1){
+                out << bar << ' ';
+                bar = -1;
+            }
+            c.notify_one();
+            break;
+        }
+        if(bar == -1){
+            out << a << ' ';
+            continue;
+        }
+        if(a <= bar)
+            out << a << ' ';
+        else{
+            out << bar << ' ';
+            bar = a;
+            c.notify_one();
+            if(bar==a)
+                c.wait(lock);
+        }
+        
     }
 }
 
 
 int iter=0;
+int max_iter=6;
 void merge_sort(string filename)
 {
     size_t size = 0;
+    int64_t bar;
+
     string output_name = filename;
     
     if(iter == 0)
@@ -88,6 +95,7 @@ void merge_sort(string filename)
 
     //find size of file
     uint64_t a;
+
     ifstream in(filename, ios::binary | ios::in);
     while(in >> a){
         size++;
@@ -121,8 +129,12 @@ void merge_sort(string filename)
         ifstream in2(fn2, ios::binary | ios::in);
         ofstream out(output_name, ios::binary | ios::out);            
         
-        merge(in1, in2, out);
-
+        in2 >> bar;
+        thread m1(merge_, ref(in1), ref(out), ref(bar));
+        thread m2(merge_, ref(in2), ref(out), ref(bar));
+        
+        m1.join();
+        m2.join();
         in1.close();
         in2.close();
         out.close();

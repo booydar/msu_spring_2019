@@ -16,7 +16,7 @@ condition_variable c;
 
 void merge_sort(string);
 void split(ifstream&, size_t, ofstream&, ofstream&); //split file into out1 and out2
-void sort(string input_name, size_t size, string output_name); //sort file with small enough size
+void sort(string input_name, size_t size, string output_name); //simple sort file with small enough size
 void merge_(ifstream&, ofstream&, int64_t&); // merge sorted files
 
 int main()
@@ -74,8 +74,7 @@ void merge_(ifstream& in, ofstream& out, int64_t& bar)
             c.notify_one();
             if(bar==a)
                 c.wait(lock);
-        }
-        
+        }        
     }
 }
 
@@ -97,13 +96,11 @@ void merge_sort(string filename)
     uint64_t a;
 
     ifstream in(filename, ios::binary | ios::in);
-    while(in >> a){
+    while(in >> a)
         size++;
-    }
     
-    if (size <= max_size){
+    if (size <= max_size)
         sort(filename, size, output_name);
-    }
     else{
         
         string fn1 = to_string(iter) + "1.bin";
@@ -153,18 +150,17 @@ void sort(string input_name, size_t size, string output_name)
     
     vector<uint64_t> a(size);
 
-    for(int i=0; i<size; i++){
+    for(int i=0; i<size; i++)
         in >> a[i];
-    }
+    
     in.close();
 
     std::sort(a.begin(), a.end());
 
     ofstream out(output_name, ios::binary | ios::out);
 
-    for(int i=0; i<size; i++){
+    for(int i=0; i<size; i++)
         out << a[i] << ' ';
-    }
 
     out.close();
 }

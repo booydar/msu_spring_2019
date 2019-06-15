@@ -3,19 +3,21 @@ using namespace std;
 
 [[noreturn]] void error() { throw invalid_argument("error"); }
 
-class Row
+class Matrix
+{
+public:
+
+    class Row
     {
     public:
         
         Row(const int l): len(l), sdata_(new int(l)){
             for(int i=0; i<l; i++)
                 sdata_[i] = 0;
-        };
-        
-        
+        };          
         int* sdata_;
         int len;
-        
+    
         int& operator[](size_t pos)
         {
             if(pos >= len)
@@ -35,23 +37,21 @@ class Row
             for(int i=0; i<len; i++)
                 sdata_[i] *= mult;
         }
-        bool operator == (Row& other)
+        bool operator == (const Row& other)
         {
             for(int i=0; i<len; i++)
                 if(sdata_[i] != other.sdata_[i])
                     return false;
             return true;
         }
-        bool operator != (Row& other)
+        bool operator != (const Row& other)
         {
             return !(*this == other);
-        }
-        
+        }       
     };
 
-class Matrix
-{
-public:
+
+
     Matrix(size_t r, size_t c)
         : rows(r), cols(c), data_(new Row*[r]){
             for(int i = 0; i < rows; i++)
@@ -62,7 +62,6 @@ public:
     const size_t cols;
     Row** data_;
 
-public:
     Row operator[](int row)
     {
         if(row >= rows)
@@ -112,7 +111,8 @@ public:
     }
     ~Matrix()
     {
-        delete data_;
+        for(int i=0; i<rows; i++)
+            delete[] data_[i];
+        delete[] data_;
     };
-    
 };

@@ -5,6 +5,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
+#include<exception>
 
 using namespace std;
 
@@ -47,7 +48,7 @@ void split(ifstream& in, size_t size, ofstream& out1, ofstream& out2, size_t& i)
     }
 }
 
-void sort(string input_name, size_t size, string output_name)
+void sort(string& input_name, size_t size, string& output_name)
 {
     ifstream in(input_name, ios::binary | ios::in);
     if(!in)
@@ -112,7 +113,7 @@ void merge_files(ifstream& in, ofstream& out, uint64_t& bar)
 
 
 int iter=0;
-void merge_sort(string filename)
+void merge_sort(string& filename)
 {
     size_t size = 0;
     uint64_t bar;
@@ -154,8 +155,8 @@ void merge_sort(string filename)
         out1.close();
         out2.close();
 
-        merge_sort(fn1);
-        merge_sort(fn2);
+        merge_sort(ref(fn1));
+        merge_sort(ref(fn2));
         
         ifstream in1(fn1, ios::binary | ios::in);
         ifstream in2(fn2, ios::binary | ios::in);
@@ -182,7 +183,14 @@ void merge_sort(string filename)
 
 int main()
 {
-    merge_sort("input.bin");
+    string fn = "input.bin";
+
+    try {
+        merge_sort(fn);
+    } catch(runtime_error) {
+        cout << "could not open file";
+        return -1;
+    }
     
     return 0;
 }

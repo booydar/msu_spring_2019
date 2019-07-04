@@ -187,9 +187,12 @@ int main()
 
     try {
         merge_sort(fn);
-    } catch(runtime_error) {
+    } catch(const runtime_error&) {
         cout << "could not open file";
         return -1;
+    } catch(...) {
+        cout << "other error occured";
+        return -2;
     }
     
     return 0;
